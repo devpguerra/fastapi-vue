@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ./services/backend
+    ports:
+      - 5000:5000
+    environment:
+      - DATABASE_URL=postgres://tornado:tornado_123@db:5432/fastapi_dev
+      - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+    volumes:
+      - ./services/backend:/app
+    command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000
+    depends_on:
+      - db
+
+  frontend:
+    build: ./services/frontend
+    volumes:
+      - './services/frontend:/app'
+      - '/app/node_modules'
+    ports:
+      - 8080:8080
+
+  db:
+    image: postgres:15.1
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=tornado
+      - POSTGRES_PASSWORD=tornado_123
+      - POSTGRES_DB=fastapi_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
