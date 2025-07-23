@@ -10,7 +10,6 @@
         <input type="password" name="password" v-model="form.password" class="form-control" />
       </div>
 
-      
       <div v-if="error" class="alert alert-danger">
         {{ error }}
       </div>
@@ -22,7 +21,8 @@
 
 <script>
 import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
 export default defineComponent({
   name: 'Login',
@@ -30,30 +30,35 @@ export default defineComponent({
     return {
       form: {
         username: '',
-        password:'',
+        password: '',
       },
       error: null,
     };
   },
+  setup() {
+    const router = useRouter();
+    const userStore = useUserStore();
+
+    return { router, userStore };
+  },
   methods: {
-    ...mapActions(['logIn']),
     async submit() {
       this.error = null;
       const User = new FormData();
       User.append('username', this.form.username);
       User.append('password', this.form.password);
-      
+
       try {
-        const success = await this.logIn(User);
+        const success = await this.userStore.logIn(User);
         if (success) {
-          this.$router.push('/dashboard');
+          this.router.push('/dashboard');
         } else {
           this.error = 'Invalid username or password';
         }
       } catch (e) {
         this.error = 'Login failed: ' + (e.message || e);
       }
-    }
-  }
+    },
+  },
 });
 </script>

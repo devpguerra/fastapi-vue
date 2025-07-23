@@ -22,50 +22,49 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import { mapGetters, mapActions } from 'vuex';
+import { defineComponent, reactive, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useNotesStore } from '@/stores/notesStore'
 
 export default defineComponent({
   name: 'EditNote',
-  props: ['id'],
-  data() {
-    return {
-      form: {
-        title: '',
-        content: '',
-      },
-    };
-  },
-  created: function() {
-    this.GetNote();
-  },
-  computed: {
-    ...mapGetters({ note: 'stateNote' }),
-  },
-  methods: {
-    ...mapActions(['updateNote', 'viewNote']),
-    async submit() {
-    try {
-      let note = {
-        id: this.id,
-        form: this.form,
-      };
-      await this.updateNote(note);
-      this.$router.push({name: 'Note', params:{id: this.note.id}});
-    } catch (error) {
-      console.log(error);
-    }
-    },
-    async GetNote() {
+  setup() {
+    const route = useRoute()
+    const router = useRouter()
+    const store = useNotesStore()
+
+    const form = reactive({
+      title: '',
+      content: ''
+    })
+
+    const id = route.params.id
+
+    // Load the note on mount
+    onMounted(async () => {
       try {
-        await this.viewNote(this.id);
-        this.form.title = this.note.title;
-        this.form.content = this.note.content;
-      } catch (error) {
-        console.error(error);
-        this.$router.push('/dashboard');
+        await store.viewNote(id)
+        form.title = store.note?.title || ''
+        form.content = store.note?.content || ''
+      } catch (err) {
+        console.error(err)
+        router.push('/dashboard')
+      }
+    })
+
+    async function submit() {
+      try {
+        await store.updateNote({ id, form })
+        router.push({ name: 'Note', params: { id } })
+      } catch (err) {
+        console.error(err)
       }
     }
-  },
-});
+
+    return {
+      form,
+      submit
+    }
+  }
+})
 </script>

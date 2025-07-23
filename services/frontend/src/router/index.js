@@ -6,7 +6,8 @@ import DashboardView from '@/views/DashboardView.vue';
 import ProfileView from '@/views/ProfileView.vue';
 import NoteView from '@/views/NoteView.vue';
 import EditNoteView from '@/views/EditNoteView.vue';
-import store from '@/store';
+
+import { useUserStore } from '@/stores/userStore' 
 
 
 const routes = [
@@ -58,16 +59,18 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()  // Get the Pinia user store instance
+
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (store.getters.isAuthenticated) {
-      next();
-      return;
+    if (userStore.isAuthenticated) {
+      next()
+      return
     }
-    next('/login');
+    next('/login')
   } else {
-    next();
+    next()
   }
-});
+})
 
 export default router

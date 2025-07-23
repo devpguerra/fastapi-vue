@@ -39,22 +39,29 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 
 export default defineComponent({
   name: 'NavBar',
-  computed: {
-    isLoggedIn: function() {
-      return this.$store.getters.isAuthenticated;
+  setup() {
+    const userStore = useUserStore()
+    const router = useRouter()
+
+    const isLoggedIn = computed(() => userStore.isAuthenticated)
+
+    async function logout() {
+      await userStore.logOut()
+      router.push('/login')
+    }
+
+    return {
+      isLoggedIn,
+      logout,
     }
   },
-  methods: {
-    async logout () {
-      await this.$store.dispatch('logOut');
-      this.$router.push('/login');
-    }
-  },
-});
+})
 </script>
 
 <style scoped>

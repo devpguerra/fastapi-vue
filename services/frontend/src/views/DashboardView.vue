@@ -50,31 +50,41 @@
 </template>
 
 <script>
-import { defineComponent } from 'vue';
-import { mapGetters, mapActions } from 'vuex';
-
+import { defineComponent, reactive, onMounted, toRefs, computed  } from 'vue'
+import { useNotesStore } from '@/stores/notesStore'
 
 export default defineComponent({
   name: 'Dashboard',
-  data() {
+  setup() {
+    const notesStore = useNotesStore()
+    
+    //reactive form state
+    const form = reactive({
+      title: '',
+      content: '',
+    })
+
+    const notes = computed(() => notesStore.notes)
+    // fetch notes on mount
+    onMounted(() => {
+      console.log("Montado pue")
+      notesStore.getNotes()
+      console.log("notasss")
+      console.log(notesStore.notes)
+    })
+
+    async function submit() {
+      await notesStore.createNote(form)
+      // clear form after submit if needed
+      form.title = ''
+      form.content = ''
+    }
+
     return {
-      form: {
-        title: '',
-        content: '',
-      },
-    };
-  },
-  created: function() {
-    return this.$store.dispatch('getNotes');
-  },
-  computed: {
-    ...mapGetters({ notes: 'stateNotes'}),
-  },
-  methods: {
-    ...mapActions(['createNote']),
-    async submit() {
-      await this.createNote(this.form);
-    },
-  },
-});
+      form,
+      notes,
+      submit,
+    }
+  }
+})
 </script>

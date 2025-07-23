@@ -18,31 +18,26 @@
   </section>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
-import { mapActions } from 'vuex';
+<script setup>
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore'
 
-export default defineComponent({
-  name: 'Register',
-  data() {
-    return {
-      user: {
-        username: '',
-        full_name: '',
-        password: '',
-      },
-    };
-  },
-  methods: {
-    ...mapActions(['register']),
-    async submit() {
-      try {
-        await this.register(this.user);
-        this.$router.push('/dashboard');
-      } catch (error) {
-        throw 'Username already exists. Please try again.';
-      }
-    },
-  },
-});
+const router = useRouter()
+const userStore = useUserStore()
+
+const user = reactive({
+  username: '',
+  full_name: '',
+  password: '',
+})
+
+async function submit() {
+  try {
+    await userStore.register(user)
+    router.push('/dashboard')
+  } catch (error) {
+    alert('Username already exists. Please try again.')
+  }
+}
 </script>
