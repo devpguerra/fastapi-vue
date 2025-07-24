@@ -1,6 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import { createApp } from "vue";
 import { createPinia } from 'pinia';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import axios from 'axios';
 
 import App from './App.vue';
@@ -10,6 +11,9 @@ import { useUserStore } from './stores/userStore';  // Import your Pinia user st
 const app = createApp(App);
 
 const pinia = createPinia();
+
+pinia.use(piniaPluginPersistedstate)
+
 app.use(pinia);
 app.use(router);
 
