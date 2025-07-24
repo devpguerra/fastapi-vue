@@ -67,10 +67,7 @@ export default defineComponent({
     const notes = computed(() => notesStore.notes)
     // fetch notes on mount
     onMounted(() => {
-      console.log("Montado pue")
       notesStore.getNotes()
-      console.log("notasss")
-      console.log(notesStore.notes)
     })
 
     async function submit() {

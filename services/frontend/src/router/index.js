@@ -59,15 +59,20 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const userStore = useUserStore()  // Get the Pinia user store instance
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
 
   if (to.matched.some(record => record.meta.requiresAuth)) {
-    if (userStore.isAuthenticated) {
+    if (!userStore.isAuthenticated) {
+      try {
+        await userStore.fetchCurrentUser()  // call backend /users/whoami and set store
+        next()
+      } catch {
+        next('/login')
+      }
+    } else {
       next()
-      return
     }
-    next('/login')
   } else {
     next()
   }

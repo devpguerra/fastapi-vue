@@ -44,7 +44,7 @@ export const useUserStore = defineStore('user', {
 
     async viewMe() {
       try {
-        const { data } = await axios.get('users/whoami')
+        const { data } = await axios.get('users/whoami', { withCredentials: true })
         this.user = data
       } catch (error) {
         console.error('Error fetching user info:', error)
@@ -62,6 +62,19 @@ export const useUserStore = defineStore('user', {
     logOut() {
       this.user = null
     },
+    
+    async fetchCurrentUser() {
+      try {
+        const baseUrl = process.env.VUE_APP_API_BASE_URL;
+        const response = await axios.get(`${baseUrl}/users/whoami`, { withCredentials: true })
+        this.user = response.data
+        return true
+      } catch (error) {
+        this.user = null
+        return false
+      }
+    }
+    
   },
 
   persist: {

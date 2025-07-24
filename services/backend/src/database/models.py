@@ -3,7 +3,9 @@ from tortoise import fields, models
 
 class Users(models.Model):
     id = fields.IntField(pk=True)
-    username = fields.CharField(max_length=20, unique=True)
+    username = fields.CharField(max_length=60, unique=True)
+    email = fields.CharField(255, unique=True, null=True)
+    is_oauth = fields.BooleanField(default=False)
     full_name = fields.CharField(max_length=50, null=True)
     password = fields.CharField(max_length=128, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)

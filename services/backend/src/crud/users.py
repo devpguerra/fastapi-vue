@@ -34,3 +34,6 @@ async def delete_user(user_id, current_user) -> Status:  # UPDATED
         return Status(message=f"Deleted user {user_id}")  # UPDATED
 
     raise HTTPException(status_code=403, detail=f"Not authorized to delete")
+
+async def get_user_by_email(email: str):
+    return await Users.get_or_none(email=email)

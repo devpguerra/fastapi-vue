@@ -9,6 +9,10 @@ services:
     environment:
       - DATABASE_URL=postgres://tornado:tornado_123@db:5432/fastapi_dev
       - SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+      - GOOGLE_CLIENT_ID=201876582983-pntcn9luff8gip5gf9dtlrhrc7fhf5oe.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET=
+      - BASE_URL=http://localhost:5000
+      - VUE_APP_URL=http://localhost:8080
     volumes:
       - ./services/backend:/app
     command: uvicorn src.main:app --reload --host 0.0.0.0 --port 5000
@@ -22,6 +26,8 @@ services:
       - '/app/node_modules'
     ports:
       - 8080:8080
+    environment:
+      - VUE_APP_API_BASE_URL=http://localhost:5000
 
   db:
     image: postgres:15.1

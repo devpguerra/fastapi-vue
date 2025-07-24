@@ -16,6 +16,9 @@
 
       <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <button @click="loginWithGoogle" class="btn-google">
+      Login with Google
+    </button>
   </section>
 </template>
 
@@ -59,6 +62,11 @@ export default defineComponent({
         this.error = 'Login failed: ' + (e.message || e);
       }
     },
+    loginWithGoogle() {
+      const baseUrl = process.env.VUE_APP_API_BASE_URL;
+      // Redirect the user to your backend Google OAuth route
+      window.location.href = `${baseUrl}/login/google`;
+  }
   },
 });
 </script>

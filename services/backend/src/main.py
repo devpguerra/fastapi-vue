@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 from tortoise import Tortoise
+import os
 
 from src.database.register import register_tortoise
 from src.database.config import TORTOISE_ORM
@@ -14,9 +16,13 @@ import 'from src.routes import users, notes' must be after 'Tortoise.init_models
 why?
 https://stackoverflow.com/questions/65531387/tortoise-orm-for-python-no-returns-relations-of-entities-pyndantic-fastapi
 """
-from src.routes import users, notes
+from src.routes import users, notes, auth_google
+
+
 
 app = FastAPI()
+
+app.add_middleware(SessionMiddleware, secret_key=os.environ.get("SECRET_KEY"))
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,6 +33,7 @@ app.add_middleware(
 )
 app.include_router(users.router)
 app.include_router(notes.router)
+app.include_router(auth_google.router)
 
 register_tortoise(app, config=TORTOISE_ORM, generate_schemas=False)
 
