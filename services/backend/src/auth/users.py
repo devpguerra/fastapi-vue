@@ -5,6 +5,7 @@ from tortoise.exceptions import DoesNotExist
 import os
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+from tortoise.expressions import Q
 
 from src.database.models import Users
 from src.schemas.users import UserDatabaseSchema
@@ -23,12 +24,15 @@ def get_password_hash(password):
     return pwd_context.hash(password)
 
 
-async def get_user(username: str):
-    return await UserDatabaseSchema.from_queryset_single(Users.get(username=username))
+async def get_user(username_or_email: str):
+    return await UserDatabaseSchema.from_queryset_single(
+         Users.get(Q(username=username_or_email) | Q(email=username_or_email))
+    )
 
 
 async def validate_user(user: OAuth2PasswordRequestForm = Depends()):
     try:
+        """ Im sending either username or email inside the user.username field """
         db_user = await get_user(user.username)
     except DoesNotExist:
         raise HTTPException(

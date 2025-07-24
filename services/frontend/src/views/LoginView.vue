@@ -2,7 +2,7 @@
   <section>
     <form @submit.prevent="submit">
       <div class="mb-3">
-        <label for="username" class="form-label">Username:</label>
+        <label for="username" class="form-label">Username or Email:</label>
         <input type="text" name="username" v-model="form.username" class="form-control" />
       </div>
       <div class="mb-3">
@@ -48,6 +48,7 @@ export default defineComponent({
     async submit() {
       this.error = null;
       const User = new FormData();
+      //This could conatain email or username
       User.append('username', this.form.username);
       User.append('password', this.form.password);
 
