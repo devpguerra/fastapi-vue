@@ -12,6 +12,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def create_user(user) -> UserOutSchema:
     user.password = pwd_context.encrypt(user.password)
+    user.auth_provider = "local"  # Ensure the auth provider is set to local
 
     try:
         user_obj = await Users.create(**user.dict(exclude_unset=True))

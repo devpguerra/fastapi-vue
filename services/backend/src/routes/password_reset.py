@@ -22,6 +22,9 @@ async def forgot_password(data: ForgotPasswordSchema):
         # For security, don't reveal if email doesn't exist
         return {"message": "If your email is registered, you'll receive a reset link."}
     
+    if "local" not in user.auth_provider:
+        return {"message": "If your email is registered, you'll receive a reset link."}  # don't reveal anything
+    
     # 2. Generate password reset token (you can use JWT or UUID)
     token = generate_password_reset_token(user.email)
     

@@ -36,14 +36,30 @@ async def google_callback(request: Request):
 
     if not user_info or "email" not in user_info:
         raise HTTPException(status_code=400, detail="Google login failed")
+    
+
 
     email = user_info["email"]
     full_name = user_info.get("name", "")
 
     user = await crud_users.get_user_by_email(email)
 
-    if not user:
-        new_user_data = UserInSchema(username=email, email=email, full_name=full_name, password="google_oauth_dummy", is_oauth = True )  # You can store a placeholder password
+    if user:
+        # 🔒 SECURITY CHECK: make sure Google login is allowed
+        if "google" not in user.auth_provider:
+            error_msg = "This account was created with a password. Google login is not enabled."
+            return RedirectResponse(
+                url=f"{os.getenv('VUE_APP_URL')}/error?msg={error_msg}"
+            )
+    else:
+        # Create new user for Google
+        new_user_data = UserInSchema(
+            username=email,
+            email=email,
+            full_name=full_name,
+            password="google_oauth_dummy",  # placeholder
+            auth_provider="google"
+        )
         user = await crud_users.create_user(new_user_data)
 
     access_token = create_access_token(data={"sub": user.username})
