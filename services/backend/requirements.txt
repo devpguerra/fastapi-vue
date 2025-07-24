@@ -11,3 +11,5 @@ authlib
 python-dotenv
 httpx
 itsdangerous
+sendgrid
+pydantic[email]

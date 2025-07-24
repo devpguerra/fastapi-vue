@@ -52,6 +52,16 @@ const routes = [
     meta: { requiresAuth: true },
     props: true,
   },
+  {
+    path: '/reset-password',
+    name: 'ResetPassword',
+    component: () => import('@/views/ResetPassword.vue')
+  },
+  {
+    path: '/forgot-password',
+    name: 'ForgotPassword',
+    component: () => import('@/views/ForgotPassword.vue'),
+  },
 ]
 
 const router = createRouter({

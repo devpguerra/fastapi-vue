@@ -90,3 +90,22 @@ async def get_current_user(token: str = Depends(security)):
         raise credentials_exception
 
     return user
+
+# Password reset token lifespan (e.g., 30 minutes)
+PASSWORD_RESET_TOKEN_EXPIRE_MINUTES = 30
+
+def generate_password_reset_token(email: str) -> str:
+    expire = datetime.utcnow() + timedelta(minutes=PASSWORD_RESET_TOKEN_EXPIRE_MINUTES)
+    to_encode = {"sub": email, "exp": expire}
+    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    return encoded_jwt
+
+def verify_password_reset_token(token: str) -> Optional[str]:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        if email is None:
+            return None
+        return email
+    except JWTError:
+        return None
