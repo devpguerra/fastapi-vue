@@ -59,8 +59,15 @@ export const useUserStore = defineStore('user', {
       }
     },
 
-    logOut() {
-      this.user = null
+    async logOut() {
+      try {
+        await axios.post('/logout') // deletes the auth cookie
+      } catch (err) {
+        console.error('Logout request failed:', err)
+      }
+      this.$reset()           // reset store state to default (Pinia method)
+      localStorage.removeItem('user')  // clear persisted user data
+      delete axios.defaults.headers.common['Authorization']
     },
     
     async fetchCurrentUser() {

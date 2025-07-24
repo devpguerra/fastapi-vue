@@ -37,6 +37,12 @@ async def login(user: OAuth2PasswordRequestForm = Depends()):
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    
+    if "local" not in user.auth_provider:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account uses Google login. Please sign in with Google.",
+        )
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
@@ -57,6 +63,11 @@ async def login(user: OAuth2PasswordRequestForm = Depends()):
 
     return response
 
+@router.post("/logout")
+async def logout():
+    response = JSONResponse(content={"message": "Logged out"})
+    response.delete_cookie("Authorization")
+    return response
 
 @router.get(
     "/users/whoami", response_model=UserOutSchema, dependencies=[Depends(get_current_user)]
