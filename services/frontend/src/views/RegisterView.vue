@@ -32,6 +32,9 @@
         Submit
       </button>
     </form>
+        <button @click="loginWithGoogle" class="btn-google">
+      Login with Google
+    </button>
   </section>
 </template>
 
@@ -86,5 +89,11 @@ async function submit() {
     errorMessage.value = error[0].msg || error || 'Registration failed';
     console.error('Registration failed:', error)
   }
+}
+
+async function loginWithGoogle() {
+  const baseUrl = process.env.VUE_APP_API_BASE_URL;
+      // Redirect the user to your backend Google OAuth route
+  window.location.href = `${baseUrl}/login/google`;
 }
 </script>
