@@ -17,6 +17,10 @@
         <label for="password" class="form-label">Password:</label>
         <input type="password" name="password" v-model="user.password" class="form-control" />
       </div>
+      <div class="mb-3">
+        <label for="confirm_password" class="form-label">Confirm Password:</label>
+        <input type="password" name="confirm_password" v-model="user.confirm_password" class="form-control" />
+      </div>
       <div v-if="errorMessage" class="alert alert-danger">
         {{ errorMessage }}
       </div>
@@ -54,16 +58,24 @@ function isValidEmail(email) {
 }
 
 async function submit() {
+
   if (!user.username.trim()) {
-    alert('Username is required')
+    errorMessage.value = 'Username is required.'
     return
   }
+
   if (!user.email.trim() || !isValidEmail(user.email)) {
-    alert('Valid email is required')
+    errorMessage.value = 'Please enter a valid email address.'
     return
   }
+
   if (!user.password) {
-    alert('Password is required')
+    errorMessage.value = 'Password is required.'
+    return
+  }
+
+  if (user.password !== user.confirm_password) {
+    errorMessage.value = 'Passwords do not match.'
     return
   }
   try {
@@ -71,7 +83,7 @@ async function submit() {
     errorMessage.value = ''
     router.push('/dashboard')
   } catch (error) {
-    errorMessage.value = error
+    errorMessage.value = error[0].msg || error || 'Registration failed';
     console.error('Registration failed:', error)
   }
 }

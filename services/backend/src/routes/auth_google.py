@@ -57,7 +57,7 @@ async def google_callback(request: Request):
             username=email,
             email=email,
             full_name=full_name,
-            password="google_oauth_dummy",  # placeholder
+            password="Google_oauth_dummy_12345",  # placeholder
             auth_provider="google"
         )
         user = await crud_users.create_user(new_user_data)
