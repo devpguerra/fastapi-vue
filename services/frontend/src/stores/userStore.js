@@ -14,15 +14,22 @@ export const useUserStore = defineStore('user', {
   actions: {
     async register(form) {
       try {
-        await axios.post('register', form)
+        const res = await axios.post('register', form)
+      } catch (error) {
+        console.error('Registration failed:', error)
+        const errMsg = error.response?.data?.detail || 'Registration failed'
+        throw errMsg 
+      }
 
         const userForm = new FormData()
         userForm.append('username', form.username)
         userForm.append('password', form.password)
 
+      try {
         await this.logIn(userForm)
       } catch (error) {
-        console.error('Registration failed:', error)
+        console.error('Login Registration failed:', error)
+        throw error.response?.data?.detail || 'Login after Registration failed'
       }
     },
 

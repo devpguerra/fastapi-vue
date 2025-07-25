@@ -17,6 +17,9 @@
         <label for="password" class="form-label">Password:</label>
         <input type="password" name="password" v-model="user.password" class="form-control" />
       </div>
+      <div v-if="errorMessage" class="alert alert-danger">
+        {{ errorMessage }}
+      </div>
       <button 
         type="submit" 
         class="btn btn-primary" 
@@ -29,12 +32,14 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref  } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
 const router = useRouter()
 const userStore = useUserStore()
+
+const errorMessage = ref('')
 
 const user = reactive({
   username: '',
@@ -63,9 +68,11 @@ async function submit() {
   }
   try {
     await userStore.register(user)
+    errorMessage.value = ''
     router.push('/dashboard')
   } catch (error) {
-    alert('Username or email already exists. Please try again.')
+    errorMessage.value = error
+    console.error('Registration failed:', error)
   }
 }
 </script>

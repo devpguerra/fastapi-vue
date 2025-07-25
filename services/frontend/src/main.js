@@ -24,7 +24,7 @@ axios.defaults.baseURL = 'http://localhost:5000/';  // your FastAPI backend
 // So we get userStore AFTER pinia is used in app
 
 axios.interceptors.response.use(
-  undefined,
+  response => response,  // pass through success responses unchanged
   function (error) {
     if (error) {
       const originalRequest = error.config;
@@ -36,10 +36,17 @@ axios.interceptors.response.use(
 
         userStore.logOut();
 
-        return router.push('/login');
+        router.push('/login');
+
+        // Throw or reject to propagate the error
+        return Promise.reject(error);
       }
     }
+
+    // For all other errors, reject to propagate them
+    return Promise.reject(error);
   }
 );
+
 
 app.mount("#app");
