@@ -6,6 +6,10 @@ from src.database.models import Users
 from src.schemas.token import Status  # NEW
 from src.schemas.users import UserOutSchema
 
+from datetime import datetime
+import uuid
+from src.auth.users import send_confirmation_email
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -15,10 +19,17 @@ async def create_user(user) -> UserOutSchema:
     if(user.auth_provider is None):
         user.auth_provider = "local"
 
+    # Step 1: Generate confirmation token
+    confirmation_token = str(uuid.uuid4())
+
     try:
-        user_obj = await Users.create(**user.dict(exclude_unset=True))
+        user_obj = await Users.create(
+            **user.dict(exclude_unset=True),
+            confirmation_token=confirmation_token,
+            token_created_at=datetime.utcnow(),
+            is_confirmed=False
+        )
     except IntegrityError as e:
-        
         error_str = str(e)
         # Try to determine which field caused the IntegrityError
         if 'username' in error_str:
@@ -27,6 +38,8 @@ async def create_user(user) -> UserOutSchema:
             raise HTTPException(status_code=400, detail="That email is already registered.")
         else:
             raise HTTPException(status_code=400, detail="Username or email already exists.")
+        
+    send_confirmation_email(user_obj.email, confirmation_token)
 
 
     return await UserOutSchema.from_tortoise_orm(user_obj)

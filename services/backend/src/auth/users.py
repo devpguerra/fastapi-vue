@@ -66,3 +66,25 @@ def send_password_reset_email(to_email: str, reset_link: str):
         print(f"Email sent! Status code: {response.status_code}")
     except Exception as e:
         print(f"Error sending email: {e}")
+
+
+def send_confirmation_email(to_email: str, token: str):
+    confirm_url = f"{os.getenv('VUE_APP_URL')}/confirm-email?token={token}"
+
+    message = Mail(
+        from_email=FROM_EMAIL,
+        to_emails=to_email,
+        subject="Confirm your account",
+        html_content=f"""
+            <p>Welcome! Please confirm your email by clicking the link below:</p>
+            <a href="{confirm_url}">Confirm Email</a>
+        """
+    )
+
+    try:
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
+        return response.status_code
+    except Exception as e:
+        print("SendGrid error:", e)
+        raise

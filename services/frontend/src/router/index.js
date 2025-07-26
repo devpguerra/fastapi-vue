@@ -62,6 +62,11 @@ const routes = [
     name: 'ForgotPassword',
     component: () => import('@/views/ForgotPassword.vue'),
   },
+    {
+    path: '/confirm-email',
+    name: 'ConfirmEmal',
+    component: () => import('@/views/ConfirmEmailView.vue'),
+  },
   {
     path: '/error',
     name: 'Error',

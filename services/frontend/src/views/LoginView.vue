@@ -60,7 +60,7 @@ export default defineComponent({
           this.error = 'Invalid username or password';
         }
       } catch (e) {
-        this.error = 'Login failed: ' + (e.message || e);
+        this.error = (e.response?.data?.detail || e);
       }
     },
     loginWithGoogle() {

@@ -52,3 +52,15 @@ async def reset_password(data: ResetPasswordSchema):
     await user.save()
 
     return {"message": "Password successfully reset"}
+
+@router.get("/confirm-email")
+async def confirm_email(token: str):
+    user = await Users.get_or_none(confirmation_token=token)
+    if not user:
+        raise HTTPException(status_code=400, detail="Invalid or expired token")
+
+    user.is_confirmed = True
+    user.confirmation_token = None
+    await user.save()
+
+    return {"message": "Email confirmed successfully"}

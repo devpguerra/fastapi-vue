@@ -1,4 +1,5 @@
 from tortoise import fields, models
+from typing import Optional
 
 
 class Users(models.Model):
@@ -10,6 +11,8 @@ class Users(models.Model):
     password = fields.CharField(max_length=128, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
+    is_confirmed = fields.BooleanField(default=False)
+    confirmation_token = fields.CharField(max_length=255, null=True)   
 
 
 class Notes(models.Model):
